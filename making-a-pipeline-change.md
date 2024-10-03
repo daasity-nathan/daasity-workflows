@@ -5,12 +5,12 @@
     a. If not given, fill these in a new comment on the card
 3. Create a comment specifying the change that you will make
 4. Identify the `__source_id`, and which merchant has this source built currently
-    a. Confirm that there are rows that have this `__source_id`
     b. If the source hasn't been built, build it.
-5. Identify the reporting table which has the data related to this change
-    a. Open it in your query console (DataGrip, Snowflake, DBeaver, etc.)
-    b. If it's multiple tables, write a query to join them together so that there's a single table which shows the data that needs changing
-    c. _Make sure to use the mart if it's available_
+5. Identify & open the reporting table which has the data to be changed
+    a. Confirm that there are rows that have this `__source_id`
+    b. Open it in your query console (DataGrip, Snowflake, DBeaver, etc.)
+    c. If it's multiple tables, write a query to join them together so that there's a single table which shows the data that needs changing
+    d. _Make sure to use the mart if it's available_
 6. Comparing `3` and `5a`, create a failing test
     a. Query should select from the table identified in `5a`, 
     b. The query should test to see if the change needed has been applied. 
@@ -21,6 +21,8 @@
 1. Open a query--running console where you can run the query to make the change
 2. Identify which file(s) need to be changed
     a. Create a secondary test if it is helpful, make sure to maintain the main test.
+2. Reset this source (using reset file in the tests directory).
+    a. Build to the file that is needing the change
 3. Make change to file, run query, run test
     a. Avoid making formatting changes, to ensure clean commits
 4. Repeat `3` until passing
