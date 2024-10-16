@@ -19,10 +19,10 @@
 
 ## Make the Change
 1. Open a query--running console where you can run the query to make the change
-2. Identify which file(s) need to be changed
-    a. Create a secondary test if it is helpful, make sure to maintain the main test.
 2. Reset this source (using reset file in the tests directory).
     a. Build to the file that is needing the change
+2. Identify which file(s) need to be changed
+    a. Create a secondary test if it is helpful, make sure to maintain the main test.
 3. Make change to file, run query, run test
     a. Avoid making formatting changes, to ensure clean commits
 4. Repeat `3` until passing
