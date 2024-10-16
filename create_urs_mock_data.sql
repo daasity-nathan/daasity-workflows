@@ -12,6 +12,14 @@ product_cte as (
             case
                 seq4()
                 when 1
+                then '0003428199'
+                when 2
+                then '0004428203'
+                else '0091428188'
+            end as listing_sku,
+            case
+                seq4()
+                when 1
                 then 'Chris''s Crunchy Cereal'
                 when 2
                 then 'Patrick''s Perfect Produce'
@@ -183,12 +191,8 @@ select
     true as is_store_level,
     false as is_warehouse_level,
     false as is_market_level,
-    'SKU' || lpad(
-        floor(uniform(0::float, 1::float, random()) * 900 + 100)::varchar, 7, '0'
-    ) as listing_sku,
-    'MSKU' || lpad(
-        floor(uniform(0::float, 1::float, random()) * 900 + 100)::varchar, 7, '0'
-    ) as master_sku,
+    p.listing_sku,
+    p.listing_sku as master_sku,
     'upc' as reporting_level,
     p.product_name,
     p.upc,
