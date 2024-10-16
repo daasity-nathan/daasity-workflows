@@ -1,6 +1,10 @@
 -- create the main table with dummy data using ctes
-create or replace table urs_staging.kroger_store_level__normalized as
+create or replace table urs_staging.urs_mock_data__normalized as
 with
+    date_range as (
+        select dateadd(day, - seq4(), current_date()) as date
+        from table(generator(rowcount => 1095))  -- 3 years * 365 days
+    ),
     product_cte as (
         select
             uuid_string() as product_id,
@@ -184,7 +188,7 @@ select
     'MSKU' || lpad(
         floor(uniform(0::float, 1::float, random()) * 900 + 100)::varchar, 7, '0'
     ) as master_sku,
-    'UPC' as reporting_level,
+    'upc' as reporting_level,
     p.product_name,
     p.upc,
     p.brand_name,
@@ -202,12 +206,8 @@ select
         10, 2
     ) as gross_units,
     floor(uniform(0::float, 1::float, random()) * 100)::number(10, 2) as return_units,
-    dateadd(
-        day, - floor(uniform(0::float, 1::float, random()) * 365), current_date()
-    ) as sales_date,
-    dateadd(
-        day, - floor(uniform(0::float, 1::float, random()) * 365), current_date()
-    ) as source_sales_date,
+    d.date as sales_date,
+    d.date as source_sales_date,
     (uniform(0::float, 1::float, random()) * 900 + 100)::number(10, 2) as dollar_sales,
     floor(uniform(0::float, 1::float, random()) * 900 + 100)::number(
         10, 2
@@ -231,20 +231,5 @@ select
 from table(generator(rowcount => 10000)), product_cte as p, location_cte as l
 order by random()
 limit 10000
-;
-
--- Verify the data
-select count(*)
-from urs_staging.kroger_store_level__normalized
-;
-select count(distinct product_id)
-from urs_staging.kroger_store_level__normalized
-;
-select count(distinct location_id)
-from urs_staging.kroger_store_level__normalized
-;
-select *
-from urs_staging.kroger_store_level__normalized
-limit 10
 ;
 
