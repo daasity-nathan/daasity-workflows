@@ -5,7 +5,8 @@ with
         select dateadd(day, - seq4(), current_date()) as date
         from table(generator(rowcount => 1095))  -- 3 years * 365 days
     ),
-    product_cte as (
+
+product_cte as (
         select
             uuid_string() as product_id,
             case
@@ -228,8 +229,9 @@ select
     'Daasity Dummy URS Data' as __source_display_name,
     current_timestamp() as __synced_at,
     uuid_string() as __sync_key
-from table(generator(rowcount => 10000)), product_cte as p, location_cte as l
+from table(generator(rowcount => 50000)), product_cte as p, location_cte as l,
+    date_range as d
 order by random()
-limit 10000
+limit 50000
 ;
 
