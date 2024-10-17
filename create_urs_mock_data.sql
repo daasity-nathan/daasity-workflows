@@ -89,7 +89,7 @@ product_cte as (
                 when 6
                 then 'Elizabeth''s Express Mart'
                 when 7
-                then 'Huiying''''s Healthy Hub'
+                then 'Huiying''s Healthy Hub'
                 when 11
                 then 'Nathan''s Nifty Noshery'
                 else 'Ben''s Bountiful Bodega'
