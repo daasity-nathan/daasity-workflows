@@ -1,5 +1,5 @@
 -- Create the main table with dummy data using CTEs
-create or replace table urms_staging.urms_mock_data__normalized as
+create or replace table urms_staging.urms_sample_data__normalized as
 with
     date_range as (
         select dateadd(day, - seq4(), current_date()) as date

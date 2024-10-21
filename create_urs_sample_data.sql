@@ -1,5 +1,5 @@
--- create the main table with dummy data using ctes
-create or replace table urs_staging.urs_mock_data__normalized as
+-- create the main table with sample data using ctes
+create or replace table urs_staging.urs_sample_data__normalized as
 with
     date_range as (
         select dateadd(day, - seq4(), current_date()) as date
@@ -220,7 +220,7 @@ select
     'USD' as original_currency,
     1.0 as currency_conversion_rate,
     'USD' as converted_currency,
-    'dummy_file_' || uuid_string() || '.csv' as __file_name,
+    'sample_file_' || uuid_string() || '.csv' as __file_name,
     'ACC' || lpad(
         floor(
             uniform(0::float, 1::float, uniform(0::float, 1::float, random())) * 900
@@ -229,8 +229,8 @@ select
         7,
         '0'
     ) as _account_id,
-    'daasity_dummy_urs_data' as __source_id,
-    'Daasity Dummy URS Data' as __source_display_name,
+    'daasity_sample_urs_data' as __source_id,
+    'Daasity Sample URS Data' as __source_display_name,
     current_timestamp() as __synced_at,
     uuid_string() as __sync_key
 from table(generator(rowcount => 50000)), product_cte as p, location_cte as l,
