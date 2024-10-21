@@ -9,26 +9,20 @@ with
     time_period_cte as (
         select
             uuid_string() as time_period_id,
+            'aggregated' as time_type,
             'latest' as time_period_type,
-            'aggregated' as time_type,  -- Changed to 'aggregated'
             case
-                when mod(row_number() over (order by random()), 4) = 0
-                then dateadd(week, -4, current_date())
-                when mod(row_number() over (order by random()), 4) = 1
-                then dateadd(week, -12, current_date())
-                when mod(row_number() over (order by random()), 4) = 2
-                then dateadd(week, -24, current_date())
-                else dateadd(week, -52, current_date())
-            end as time_period_start,
-            case
-                when mod(row_number() over (order by random()), 4) = 0
-                then '04 Weeks'
-                when mod(row_number() over (order by random()), 4) = 1
-                then '12 Weeks'
-                when mod(row_number() over (order by random()), 4) = 2
-                then '24 Weeks'
+                when mod(row_number() over (order by random()), 4) = 0 then '04 Weeks'
+                when mod(row_number() over (order by random()), 4) = 1 then '12 Weeks'
+                when mod(row_number() over (order by random()), 4) = 2 then '24 Weeks'
                 else '52 Weeks'
             end as time_period_name,
+            case
+                when mod(row_number() over (order by random()), 4) = 0 then dateadd(week, -4, current_date())
+                when mod(row_number() over (order by random()), 4) = 1 then dateadd(week, -12, current_date())
+                when mod(row_number() over (order by random()), 4) = 2 then dateadd(week, -24, current_date())
+                else dateadd(week, -52, current_date())
+            end as time_period_start,
             current_date() as time_period_end
         from table(generator(rowcount => 100))
     ),
@@ -154,8 +148,8 @@ select
     current_date() as extract_end_date,
     tp.time_period_start as time_start,
     tp.time_period_end as time_end,
-    tp.time_period_type as time_type,
-    'Period ' || row_number() over (order by tp.time_period_start) as time_period_name,
+    tp.time_type,
+    tp.time_period_name,
     tp.time_period_type,
     tp.time_period_start,
     tp.time_period_end,
@@ -190,37 +184,21 @@ select
     p.unit_of_measure,
     p.pack_count,
     p.form,
-    (uniform(0::float, 1::float, random()) * 100000 + 10000)::number(
-        10, 2
-    ) as dollar_sales,
+    (uniform(0::float, 1::float, random()) * 100000 + 10000)::number(10, 2) as dollar_sales,
     floor(uniform(0::float, 1::float, random()) * 10000 + 1000) as unit_sales,
     (uniform(0::float, 1::float, random()) * 100)::number(20, 4) as max_acv,
     (uniform(0::float, 1::float, random()) * 1000 + 100)::number(10, 2) as tdp,
-    (uniform(0::float, 1::float, random()) * 52)::number(
-        10, 2
-    ) as number_of_weeks_selling,
-    (uniform(0::float, 1::float, random()) * 20000 + 2000)::number(
-        10, 2
-    ) as dollars_promo,
+    (uniform(0::float, 1::float, random()) * 52)::number(10, 2) as number_of_weeks_selling,
+    (uniform(0::float, 1::float, random()) * 20000 + 2000)::number(10, 2) as dollars_promo,
     floor(uniform(0::float, 1::float, random()) * 2000 + 200) as units_promo,
-    (uniform(0::float, 1::float, random()) * 80000 + 8000)::number(
-        10, 2
-    ) as base_dollars,
+    (uniform(0::float, 1::float, random()) * 80000 + 8000)::number(10, 2) as base_dollars,
     floor(uniform(0::float, 1::float, random()) * 8000 + 800) as base_units,
     floor(uniform(0::float, 1::float, random()) * 1000 + 100) as no_of_stores_selling,
-    (uniform(0::float, 1::float, random()) * 5000 + 500)::number(
-        10, 2
-    ) as dollars_display_only,
-    (uniform(0::float, 1::float, random()) * 5000 + 500)::number(
-        10, 2
-    ) as dollars_feature_only,
-    (uniform(0::float, 1::float, random()) * 10000 + 1000)::number(
-        10, 2
-    ) as dollars_feature_and_display,
+    (uniform(0::float, 1::float, random()) * 5000 + 500)::number(10, 2) as dollars_display_only,
+    (uniform(0::float, 1::float, random()) * 5000 + 500)::number(10, 2) as dollars_feature_only,
+    (uniform(0::float, 1::float, random()) * 10000 + 1000)::number(10, 2) as dollars_feature_and_display,
     (uniform(0::float, 1::float, random()) * 5000 + 500)::number(10, 2) as dollars_tpr,
-    (uniform(0::float, 1::float, random()) * 15000 + 1500)::number(
-        10, 2
-    ) as base_dollars_promo,
+    (uniform(0::float, 1::float, random()) * 15000 + 1500)::number(10, 2) as base_dollars_promo,
     floor(uniform(0::float, 1::float, random()) * 1500 + 150) as base_units_promo,
     'daasity_internal_data_' || uuid_string() || '.csv' as __file_name,
     uuid_string() as __sync_key,
@@ -237,10 +215,8 @@ from
     ) as tp,
     product_cte as p,
     market_cte as m,
-    -- Adjusted to account for additional trended rows
-    table(generator(rowcount => ceil(50000 / 2.04)))
+    table(generator(rowcount => 50000))
 where random() < 0.7 or tp.time_type = 'trended'
 order by random()
 limit 50000
 ;
-
