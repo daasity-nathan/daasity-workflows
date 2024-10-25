@@ -23,18 +23,18 @@ with
                 when mod(row_number() over (order by random()), 4) = 2 then dateadd(week, -24, current_date())
                 else dateadd(week, -52, current_date())
             end as time_period_start,
-            current_date() as time_period_end
+            dateadd('day', -1, date_trunc('week', current_date())) as time_period_end
         from table(generator(rowcount => 100))
     ),
 
     trended_time_period_cte as (
         select
             uuid_string() as time_period_id,
-            'trended' as time_type,
+            'weekly' as time_type,
             'latest' as time_period_type,
-            '01 Weeks' as time_period_name,
-            dateadd(week, - num, current_date()) as time_period_start,
-            dateadd(week, - num + 1, current_date()) as time_period_end
+            null as time_period_name,
+            dateadd(week, - num, dateadd('day', 0, date_trunc('week', current_date()))) as time_period_start,
+            dateadd(week, - num + 1, dateadd('day', -1, date_trunc('week', current_date()))) as time_period_end
         from
             (
                 select row_number() over (order by seq4()) - 1 as num
@@ -145,7 +145,7 @@ select
     uuid_string() as time_id,
     tp.time_period_id,
     p.product_id,
-    current_date() as extract_end_date,
+    dateadd('day', -1, date_trunc('week', current_date())) as extract_end_date,
     tp.time_period_start as time_start,
     tp.time_period_end as time_end,
     tp.time_type,
@@ -216,7 +216,7 @@ from
     product_cte as p,
     market_cte as m,
     table(generator(rowcount => 50000))
-where random() < 0.7 or tp.time_type = 'trended'
+where random() < 0.7 or tp.time_type = 'weekly'
 order by random()
 limit 50000
 ;

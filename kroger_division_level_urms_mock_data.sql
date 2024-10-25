@@ -1,4 +1,4 @@
-create or replace view urs_staging.kroger_division_level__normalized as
+create or replace view urms_staging.kroger_division_level__normalized as
 with final as (select * from urms_staging.urms_sample_data__normalized)
 select
 
@@ -69,4 +69,6 @@ select
     'Kroger Division Level' as __source_display_name,
     __synced_at
 from final
+where time_type = 'weekly'
 ;
+
